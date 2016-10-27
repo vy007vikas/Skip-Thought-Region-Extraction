@@ -29,14 +29,15 @@ def build_visual_genome():
 	with open(data_loc,'r') as configFile:
 		data = json.load(configFile)
 
-	vg_dict = {}
-	vg_vec = []
-	cnt = 1
+
+	batch_size = 5000
+	curr = 0
 	total_count = 0
 	valid_count = 0
 	id_missing = 0
 	img_id = []
-	region = []
+	curr_batch = []
+	vg_vec = []
 	brk = False
 
 	for val in data:
@@ -47,7 +48,9 @@ def build_visual_genome():
 				id_missing += 1
 				continue
 
-			vg_vec.append(skipthoughts.encode(model,val1['phrase']))
+			curr_batch.append()
+
+			vg_vec.append(skipthoughts.encode(model,curr_batch))
 
 			vec = np.zeros((lstm_steps,))
 
@@ -55,15 +58,6 @@ def build_visual_genome():
 			captions.append(vec)
 			img_id.append(val1['image_id'])
 			region.append(np.array([val1['x'], val1['y'], val1['height'], val1['width']]))
-
-			print val1['phrase']
-			print val1['image_id']
-			print region
-
-			brk = True
-			break
-		if brk:
-			break
 
 	del data
 	captions = np.array(captions)
