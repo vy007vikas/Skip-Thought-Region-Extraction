@@ -37,8 +37,8 @@ def build_visual_genome():
 	id_missing = 0
 	img_id = []
 	curr_batch = []
-	vg_vec = []
-	brk = False
+	captions_vec = []
+	region = []
 
 	for val in data:
 		for val1 in val['regions']:
@@ -48,37 +48,32 @@ def build_visual_genome():
 				id_missing += 1
 				continue
 
-			curr_batch.append()
-
-			vg_vec.append(skipthoughts.encode(model,curr_batch))
-
-			vec = np.zeros((lstm_steps,))
-
 			valid_count = valid_count + 1
-			captions.append(vec)
+			curr_batch.append(val1['phrase'])
+
+			if valid_count%batch_size == 0:
+				captions_vec.append(skipthoughts.encode(model,curr_batch))
+				curr_batch = []
+
 			img_id.append(val1['image_id'])
 			region.append(np.array([val1['x'], val1['y'], val1['height'], val1['width']]))
 
+	if valid_count%batch_size != 0:
+		captions_vec.append(skipthoughts.encode(model,curr_batch))
+		curr_batch = []
+
 	del data
-	captions = np.array(captions)
+	captions_vec = np.array(captions_vec)
 	img_id = np.array(img_id)
 	region = np.array(region)
-
-	vg_vec = np.array(vg_vec)
-	print ' Visual Genome custom dictionary built successfully!'
 
 	print ' Missing ids :- ', id_missing
 	print ' valid count :- ', valid_count
 	print ' total count :- ', total_count
 
-	print ' Saving word vectors to :- ' , vec_loc
-	vec_h5 = h5py.File(vec_loc , 'w')
-	vec_h5.create_dataset('vg_vec',data=vg_vec)
-	vec_h5.close()
-
-	print ' Saving VG encoded captions to :- ' , captions_loc
+	print ' Saving skipthought encoded captions to :- ' , captions_loc
 	captions_h5 = h5py.File(captions_loc , 'w')
-	captions_h5.create_dataset('vg_captions',data=captions)
+	captions_h5.create_dataset('vg_captions',data=captions_vec)
 	captions_h5.close()
 
 	print ' Saving VG image ids to :- ' , img_id_loc
