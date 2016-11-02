@@ -18,7 +18,6 @@ def build_visual_genome():
 
 	data_loc = parser.get('data','visual_genome_data')
 	img_info_loc = parser.get('data','image_info')
-	vec_loc = parser.get('data','word_vectors')
 	captions_loc = parser.get('data','vg_captions')
 	img_id_loc = parser.get('data','vg_img_id')
 	region_loc = parser.get('data','vg_region')
