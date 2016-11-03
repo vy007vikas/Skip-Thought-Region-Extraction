@@ -71,4 +71,9 @@ class nnet:
 		loss = 1 - (self.area_intersection(answer,O3)/self.area_union(answer,O3))
 		loss_final = tf.reduce_mean(loss,0)
 
-		return loss_final , O3
+		input_tensor = {
+			'img_fc7' : Ximg,
+			'answer' : answer,
+		}
+
+		return input_tensor, loss_final, O3
